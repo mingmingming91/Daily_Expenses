@@ -40,8 +40,11 @@
                     <input type="time" id="inputTime" required>
                 </div>
         
-                <input type="text" id="note" placeholder="備注 (選填)" style="width: 100%; margin-bottom: 10px; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box;">
+                <input type="text" id="note" list="noteHistory" placeholder="備注 (選填)" 
+                       style="width: 100%; margin-bottom: 10px; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box;">
                 
+                <datalist id="noteHistory">
+                    </datalist>                
                 <button type="submit" class="add-btn">新增記錄</button>
             </form>
         </section>
