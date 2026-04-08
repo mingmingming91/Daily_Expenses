@@ -162,3 +162,16 @@ hr {
     border-top: 1px solid #ddd;
     margin: 20px 0;
 }
+
+.today-date {
+    font-size: 1.1rem;
+    font-weight: 500;
+    background: rgba(255, 255, 255, 0.2);
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+}
+
+.summary-card h2 {
+    font-weight: bold;
+}
