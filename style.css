@@ -110,3 +110,39 @@ input, select {
     color: #aaa;
     margin-top: 40px;
 }
+
+/* 調整列表項目排版 */
+.expense-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.item-amount {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* 金額與按鈕之間的間距 */
+}
+
+/* 刪除按鈕樣式 */
+.delete-btn {
+    background-color: #ffeded;
+    color: #ff5e5e;
+    border: none;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s;
+}
+
+.delete-btn:hover {
+    background-color: #ff5e5e;
+    color: white;
+}
