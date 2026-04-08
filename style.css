@@ -172,6 +172,18 @@ hr {
     border-radius: 20px;
 }
 
+.item-info {
+    flex: 1; /* 佔用剩餘空間 */
+    padding-right: 10px;
+    overflow: hidden;
+}
+
+.item-info div {
+    white-space: nowrap;
+    text-overflow: ellipsis; /* 文字太長時顯示 ... */
+    overflow: hidden;
+}
+
 .summary-card h2 {
     font-weight: bold;
 }
