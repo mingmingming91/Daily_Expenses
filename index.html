@@ -63,18 +63,31 @@
                 </ul>
             </div>
             
-            <div id="searchView" style="display: none; padding: 20px;">
-                    <h3>搜尋記錄</h3>
-                    <div class="input-group" style="margin-bottom: 10px;">
-                        <input type="date" id="searchFrom">
-                        <span style="align-self: center;">至</span>
-                        <input type="date" id="searchTo">
-                    </div>
-                    <button onclick="performSearch()" class="add-btn" style="background: #34495e;">執行搜尋</button>
-                    
-                    <div id="searchResultSummary" style="margin-top: 15px; font-weight: bold; color: var(--primary);"></div>
-                    <ul id="searchResultList" class="expense-list"></ul>
-            </div>            
+        <div id="searchView" style="display: none; padding: 20px;">
+            <h3>搜尋記錄</h3>
+            
+            <div class="input-group" style="margin-bottom: 10px;">
+                <input type="date" id="searchFrom">
+                <span style="align-self: center;">至</span>
+                <input type="date" id="searchTo">
+            </div>
+        
+            <div class="input-group" style="margin-bottom: 10px;">
+                <select id="searchCategory">
+                    <option value="all">所有類別</option>
+                    <option value="飲食">飲食</option>
+                    <option value="交通">交通</option>
+                    <option value="購物">購物</option>
+                    <option value="其他">其他</option>
+                </select>
+                <input type="text" id="searchNote" placeholder="搜尋備注關鍵字">
+            </div>
+
+    <button onclick="performSearch()" class="add-btn" style="background: #34495e;">執行搜尋</button>
+    
+    <div id="searchResultSummary" style="margin-top: 15px; font-weight: bold; color: var(--primary);"></div>
+    <ul id="searchResultList" class="expense-list"></ul>
+</div>       
 
             
             <div id="settingsView" style="display: none; padding: 20px;">
