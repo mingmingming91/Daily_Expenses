@@ -273,6 +273,10 @@ window.performSearch = function() {
     const to = document.getElementById('searchTo').value;
     const cate = document.getElementById('searchCategory').value; // 取得選中的類別名稱
     const noteKey = document.getElementById('searchNote').value.trim().toLowerCase();
+
+    // --- 在這裡加入 console.log ---
+    console.log("正在搜尋類別:", cate, "目前的資料範例:", expenses[0]?.category);
+    // ----------------------------
     
     const resultList = document.getElementById('searchResultList');
     const summaryEl = document.getElementById('searchResultSummary');
