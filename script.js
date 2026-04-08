@@ -20,6 +20,7 @@ const recurringTotalEl = document.getElementById('recurringTotal');
 // --- 3. 啟動 App ---
 function init() {
     setDefaultDateTime(); // 設定預設日期時間
+    setDefaultSearchDates(); // 初始化搜尋日期
     checkRecurringExpenses(); 
     renderUI();
     updateNoteSuggestions(); // 初始化時加載備注歷史
@@ -253,6 +254,17 @@ function updateNoteSuggestions() {
         .join('');
 }
 
+// --- 11. 取得上個月日期
+function setDefaultSearchDates() {
+    const now = new Date();
+    // 取得上個月的 1 號
+    const firstDayLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    // 取得上個月的最後一天 (本月第 0 天即上月最後一天)
+    const lastDayLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+
+    document.getElementById('searchFrom').value = firstDayLastMonth.toLocaleDateString('sv-SE');
+    document.getElementById('searchTo').value = lastDayLastMonth.toLocaleDateString('sv-SE');
+}
 
 // 啟動！
 init();
