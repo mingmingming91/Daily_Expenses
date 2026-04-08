@@ -225,6 +225,9 @@ window.addEventListener('scroll', () => {
         // 如果目前顯示的數量少於總數，就增加限制並重新渲染
         if (displayLimit < expenses.length) {
             displayLimit += 15; // 每次加 15 筆
+            // --- 加入這行 ---
+            console.log("目前的顯示限額已增加至:", displayLimit);
+            // ----------------
             renderUI();
         }
     }
