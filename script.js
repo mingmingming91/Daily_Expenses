@@ -147,5 +147,50 @@ function deleteExpense(id) {
     }
 }
 
+// 10. 處理固定支出表單提交
+const recurringForm = document.getElementById('recurringForm');
+if (recurringForm) {
+    recurringForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const newSetting = {
+            id: 'rec_' + Date.now(),
+            category: document.getElementById('recName').value,
+            day: parseInt(document.getElementById('recDay').value),
+            amount: parseFloat(document.getElementById('recAmount').value),
+            lastBilledMonth: '' // 新增時預設本月未扣
+        };
+        recurringSettings.push(newSetting);
+        saveData();
+        renderRecurringList();
+        recurringForm.reset();
+        updateTotals(); // 更新 Dashboard 上的固定支出總額
+    });
+}
+
+// 11. 渲染設定列表
+function renderRecurringList() {
+    const listEl = document.getElementById('recurringList');
+    listEl.innerHTML = recurringSettings.map(setting => `
+        <li class="expense-item">
+            <div>
+                <strong>${setting.category}</strong>
+                <small style="display:block; color:#888;">每月 ${setting.day} 號 | $${setting.amount}</small>
+            </div>
+            <button class="delete-btn" onclick="deleteRecurring('${setting.id}')">✕</button>
+        </li>
+    `).join('');
+}
+
+// 12. 刪除固定支出設定
+window.deleteRecurring = function(id) {
+    if (confirm('刪除後將不再自動扣款，確定嗎？')) {
+        recurringSettings = recurringSettings.filter(s => s.id !== id);
+        saveData();
+        renderRecurringList();
+        updateTotals();
+    }
+};
+
+
 // 執行初始化
 init();
