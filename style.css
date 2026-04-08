@@ -1,0 +1,112 @@
+:root {
+    --primary: #4a90e2;
+    --bg: #f5f7fa;
+    --text: #333;
+    --card-bg: #ffffff;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    margin: 0;
+    display: flex;
+    justify-content: center;
+}
+
+.app-container {
+    width: 100%;
+    max-width: 500px;
+    min-height: 100vh;
+    background: var(--bg);
+}
+
+/* 儀表板樣式 */
+.dashboard {
+    background: var(--primary);
+    color: white;
+    padding: 30px 20px;
+    border-bottom-left-radius: 25px;
+    border-bottom-right-radius: 25px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.summary-card p { opacity: 0.8; margin-bottom: 5px; }
+.summary-card h1 { margin: 0; font-size: 2.5rem; }
+.stats-row { 
+    margin-top: 15px; 
+    display: flex; 
+    gap: 20px; 
+    font-size: 0.9rem;
+}
+
+/* 輸入框樣式 */
+.input-section {
+    padding: 20px;
+    margin-top: -20px;
+}
+
+#expenseForm {
+    background: var(--card-bg);
+    padding: 15px;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.input-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+input, select {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.add-btn {
+    width: 100%;
+    padding: 12px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* 列表與分頁 */
+.tab-menu {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+}
+
+.tab-link {
+    background: none;
+    border: none;
+    color: #888;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.tab-link.active {
+    color: var(--primary);
+    border-bottom: 2px solid var(--primary);
+    font-weight: bold;
+}
+
+.expense-list {
+    list-style: none;
+    padding: 20px;
+    margin: 0;
+}
+
+.empty-msg {
+    text-align: center;
+    color: #aaa;
+    margin-top: 40px;
+}
