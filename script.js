@@ -53,15 +53,22 @@ if (expenseForm) {
     expenseForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const amount = parseFloat(document.getElementById('amount').value);
-        if (isNaN(amount) || amount <= 0) return;
-
+        const note = document.getElementById('note').value; // 抓取備注
+        const now = new Date();
+        
+        // 取得時間格式 14:30
+        const timeString = now.getHours().toString().padStart(2, '0') + ":" + 
+                           now.getMinutes().toString().padStart(2, '0');
+    
         const newExpense = {
             id: Date.now().toString(),
             amount: amount,
             category: document.getElementById('category').options[document.getElementById('category').selectedIndex].text,
-            date: new Date().toLocaleDateString('sv-SE')
+            note: note, // 儲存備注
+            date: now.toLocaleDateString('sv-SE'), // YYYY-MM-DD
+            time: timeString // 儲存時間
         };
-
+    
         expenses.push(newExpense);
         saveData();
         renderUI();
