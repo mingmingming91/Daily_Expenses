@@ -131,8 +131,6 @@ function renderUI() {
     updateTotals();
 }
 
-    updateTotals();
-}
 
 // --- 8. 儲存資料到 LocalStorage ---
 function saveData() {
