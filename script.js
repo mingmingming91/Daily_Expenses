@@ -114,23 +114,24 @@ if (recurringForm) {
 
 // --- 7. 分頁切換功能 ---
 window.switchTab = function(tab) {
-    const listView = document.getElementById('listView');
-    const settingsView = document.getElementById('settingsView');
+    const views = {
+        'list': document.getElementById('listView'),
+        'search': document.getElementById('searchView'),
+        'settings': document.getElementById('settingsView')
+    };
     const tabs = document.querySelectorAll('.tab-link');
 
-    if (tab === 'list') {
-        listView.style.display = 'block';
-        settingsView.style.display = 'none';
-        tabs[0].classList.add('active');
-        tabs[1].classList.remove('active');
-        renderUI();
-    } else {
-        listView.style.display = 'none';
-        settingsView.style.display = 'block';
-        tabs[1].classList.add('active');
-        tabs[0].classList.remove('active');
-        renderRecurringList();
-    }
+    // 隱藏所有，顯示目標
+    Object.values(views).forEach(v => v.style.display = 'none');
+    views[tab].style.display = 'block';
+
+    // 處理 Tab 高亮
+    tabs.forEach(t => t.classList.remove('active'));
+    if(tab === 'list') tabs[0].classList.add('active');
+    if(tab === 'search') tabs[1].classList.add('active');
+    if(tab === 'settings') tabs[2].classList.add('active');
+
+    if(tab === 'list') renderUI();
 };
 
 // --- 8. 介面渲染與統計 ---
@@ -265,6 +266,40 @@ function setDefaultSearchDates() {
     document.getElementById('searchFrom').value = firstDayLastMonth.toLocaleDateString('sv-SE');
     document.getElementById('searchTo').value = lastDayLastMonth.toLocaleDateString('sv-SE');
 }
+
+// --- 12. 搜尋指定期間記錄
+window.performSearch = function() {
+    const from = document.getElementById('searchFrom').value;
+    const to = document.getElementById('searchTo').value;
+    const resultList = document.getElementById('searchResultList');
+    const summaryEl = document.getElementById('searchResultSummary');
+
+    if (!from || !to) return alert("請選擇日期範圍");
+
+    // 篩選介於日期之間的資料
+    const filtered = expenses.filter(exp => exp.date >= from && exp.date <= to)
+                             .sort((a, b) => new Date(b.date + ' ' + b.time) - new Date(a.date + ' ' + a.time));
+
+    const total = filtered.reduce((sum, exp) => sum + exp.amount, 0);
+
+    // 顯示統計結果
+    summaryEl.innerText = `找到 ${filtered.length} 筆，總計：$${total.toLocaleString()}`;
+
+    // 渲染結果清單
+    resultList.innerHTML = filtered.map(item => `
+        <li class="expense-item">
+            <div class="item-info">
+                <div style="font-weight: bold;">${item.note ? item.category + ' - ' + item.note : item.category}</div>
+                <small style="color: #888;">${item.date} (${item.time})</small>
+            </div>
+            <div class="item-amount">
+                <strong style="color: #e74c3c;">-$${item.amount.toLocaleString()}</strong>
+                <button class="delete-btn" onclick="deleteExpense('${item.id}'); performSearch();">✕</button>
+            </div>
+        </li>
+    `).join('') || '<li class="empty-msg">此段期間沒有記錄</li>';
+};
+
 
 // 啟動！
 init();
