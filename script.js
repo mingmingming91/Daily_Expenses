@@ -1,40 +1,37 @@
 /**
- * DailySpend - 核心邏輯整合版
+ * DailySpend - 完整功能整合版 (包含：記錄、統計、固定使費設定、分頁、刪除)
  */
 
 // --- 1. 資料初始化 ---
-// 從 LocalStorage 讀取資料，若無資料則初始化為空陣列
 let expenses = JSON.parse(localStorage.getItem('myExpenses')) || [];
 let recurringSettings = JSON.parse(localStorage.getItem('recurringSettings')) || [
-    // 預設一個例子：每月 1 號扣租金 $5000
-    { id: 'rec_1', day: 1, amount: 5000, category: '租金', lastBilledMonth: '' }
+    { id: 'rec_1', day: 1, amount: 5000, category: '預設房租', lastBilledMonth: '' }
 ];
 
 // --- 2. 獲取 DOM 元素 ---
 const expenseForm = document.getElementById('expenseForm');
-const amountInput = document.getElementById('amount');
-const categoryInput = document.getElementById('category');
+const recurringForm = document.getElementById('recurringForm');
 const expenseList = document.getElementById('expenseList');
+const recurringList = document.getElementById('recurringList');
 const monthTotalEl = document.getElementById('monthTotal');
 const weekTotalEl = document.getElementById('weekTotal');
 const recurringTotalEl = document.getElementById('recurringTotal');
 
 // --- 3. 啟動 App ---
 function init() {
-    checkRecurringExpenses(); // 檢查並自動處理每月固定使費
-    renderUI();              // 渲染介面
+    checkRecurringExpenses(); 
+    renderUI();              
 }
 
-// --- 4. 自動處理固定使費 ---
+// --- 4. 自動處理固定使費邏輯 ---
 function checkRecurringExpenses() {
     const now = new Date();
     const today = now.getDate();
-    const thisMonth = now.toISOString().slice(0, 7); // 格式 "2024-04"
+    const thisMonth = now.toISOString().slice(0, 7);
 
     let hasUpdate = false;
 
     recurringSettings.forEach(setting => {
-        // 邏輯：如果今天日期 >= 設定日期，且該項目在本月尚未入帳
         if (today >= setting.day && setting.lastBilledMonth !== thisMonth) {
             const autoExpense = {
                 id: 'auto_' + Date.now() + Math.random(),
@@ -42,74 +39,105 @@ function checkRecurringExpenses() {
                 category: setting.category + " (固定)",
                 date: `${thisMonth}-${String(setting.day).padStart(2, '0')}`
             };
-            
             expenses.push(autoExpense);
-            setting.lastBilledMonth = thisMonth; // 標記本月已扣
+            setting.lastBilledMonth = thisMonth;
             hasUpdate = true;
         }
     });
 
-    if (hasUpdate) {
-        saveData();
-    }
+    if (hasUpdate) saveData();
 }
 
-// --- 5. 新增使費事件 ---
-expenseForm.addEventListener('submit', (e) => {
-    e.preventDefault();
+// --- 5. 事件監聽 (新增使費) ---
+if (expenseForm) {
+    expenseForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const amount = parseFloat(document.getElementById('amount').value);
+        if (isNaN(amount) || amount <= 0) return;
 
-    const amount = parseFloat(amountInput.value);
-    if (isNaN(amount) || amount <= 0) return;
+        const newExpense = {
+            id: Date.now().toString(),
+            amount: amount,
+            category: document.getElementById('category').options[document.getElementById('category').selectedIndex].text,
+            date: new Date().toLocaleDateString('sv-SE')
+        };
 
-    const newExpense = {
-        id: Date.now(),
-        amount: amount,
-        category: categoryInput.options[categoryInput.selectedIndex].text,
-        date: new Date().toLocaleDateString('sv-SE') // 取得 YYYY-MM-DD 本地日期
-    };
+        expenses.push(newExpense);
+        saveData();
+        renderUI();
+        expenseForm.reset();
+    });
+}
 
-    expenses.push(newExpense);
-    saveData();
-    renderUI();
-    expenseForm.reset(); // 清空表格
-});
+// --- 6. 事件監聽 (新增固定使費設定) ---
+if (recurringForm) {
+    recurringForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const newSetting = {
+            id: 'rec_' + Date.now(),
+            category: document.getElementById('recName').value,
+            day: parseInt(document.getElementById('recDay').value),
+            amount: parseFloat(document.getElementById('recAmount').value),
+            lastBilledMonth: ''
+        };
+        recurringSettings.push(newSetting);
+        saveData();
+        renderRecurringList();
+        updateTotals();
+        recurringForm.reset();
+    });
+}
 
-// --- 6. 統計與結算邏輯 ---
+// --- 7. 分頁切換功能 ---
+window.switchTab = function(tab) {
+    const listView = document.getElementById('listView');
+    const settingsView = document.getElementById('settingsView');
+    const tabs = document.querySelectorAll('.tab-link');
+
+    if (tab === 'list') {
+        listView.style.display = 'block';
+        settingsView.style.display = 'none';
+        tabs[0].classList.add('active');
+        tabs[1].classList.remove('active');
+        renderUI();
+    } else {
+        listView.style.display = 'none';
+        settingsView.style.display = 'block';
+        tabs[1].classList.add('active');
+        tabs[0].classList.remove('active');
+        renderRecurringList();
+    }
+};
+
+// --- 8. 介面渲染與統計 ---
 function updateTotals() {
     const now = new Date();
     const thisMonth = now.toISOString().slice(0, 7);
     
-    // A. 每月結算 (本月 1 號至今)
     const monthTotal = expenses
         .filter(exp => exp.date.startsWith(thisMonth))
         .reduce((sum, exp) => sum + exp.amount, 0);
 
-    // B. 每周結算 (過去 7 天)
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(now.getDate() - 7);
     const weekTotal = expenses
         .filter(exp => new Date(exp.date) >= sevenDaysAgo)
         .reduce((sum, exp) => sum + exp.amount, 0);
 
-    // C. 固定使費總和 (設定中的預算)
     const recurringSum = recurringSettings.reduce((sum, rec) => sum + rec.amount, 0);
 
-    // 更新到介面
-    monthTotalEl.innerText = `$${monthTotal.toLocaleString()}`;
-    weekTotalEl.innerText = `$${weekTotal.toLocaleString()}`;
-    recurringTotalEl.innerText = `$${recurringSum.toLocaleString()}`;
+    if (monthTotalEl) monthTotalEl.innerText = `$${monthTotal.toLocaleString()}`;
+    if (weekTotalEl) weekTotalEl.innerText = `$${weekTotal.toLocaleString()}`;
+    if (recurringTotalEl) recurringTotalEl.innerText = `$${recurringSum.toLocaleString()}`;
 }
 
-// --- 7. 介面渲染 ---
 function renderUI() {
+    if (!expenseList) return;
     expenseList.innerHTML = '';
-
     if (expenses.length === 0) {
         expenseList.innerHTML = '<li class="empty-msg">今日未有使費，繼續保持！</li>';
     } else {
-        const recentExpenses = [...expenses].reverse().slice(0, 10);
-        
-        recentExpenses.forEach(item => {
+        [...expenses].reverse().slice(0, 15).forEach(item => {
             const li = document.createElement('li');
             li.className = 'expense-item';
             li.innerHTML = `
@@ -123,88 +151,35 @@ function renderUI() {
                 </div>
             `;
             expenseList.appendChild(li);
-        }); // 這裡要有 });
+        });
     }
     updateTotals();
-} // 這裡要有一個 } 閉合 renderUI
-
-// --- 8. 儲存資料到 LocalStorage ---
-function saveData() {
-    localStorage.setItem('myExpenses', JSON.stringify(expenses));
-    localStorage.setItem('recurringSettings', JSON.stringify(recurringSettings));
 }
 
-
-// --- 9. 刪除記錄功能 ---
-function deleteExpense(id) {
-    // 為了安全，刪除前問一句（如果不想要彈窗可以刪除 if 這行）
-    if (confirm('確定要刪除這筆記錄嗎？')) {
-        // 過濾掉該 ID 的項目 (注意：ID 可能是數字或字串，所以用 != 而不是 !==)
-        expenses = expenses.filter(exp => exp.id != id);
-        
-        saveData(); // 儲存到 LocalStorage
-        renderUI(); // 重新整理畫面
-    }
-}
-
-// 10. 轉頁面的功能
-window.switchTab = function(tab) {
-    const listView = document.getElementById('listView');
-    const settingsView = document.getElementById('settingsView');
-    const tabs = document.querySelectorAll('.tab-link');
-
-    if (tab === 'list') {
-        listView.style.display = 'block';
-        settingsView.style.display = 'none';
-        tabs[0].classList.add('active');
-        tabs[1].classList.remove('active');
-        renderUI(); // 切換回來時更新列表
-    } else {
-        listView.style.display = 'none';
-        settingsView.style.display = 'block';
-        tabs[1].classList.add('active');
-        tabs[0].classList.remove('active');
-        renderRecurringList(); // 顯示設定列表
-    }
-};
-
-// 11. 處理固定支出表單提交
-const recurringForm = document.getElementById('recurringForm');
-if (recurringForm) {
-    recurringForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const newSetting = {
-            id: 'rec_' + Date.now(),
-            category: document.getElementById('recName').value,
-            day: parseInt(document.getElementById('recDay').value),
-            amount: parseFloat(document.getElementById('recAmount').value),
-            lastBilledMonth: '' // 新增時預設本月未扣
-        };
-        recurringSettings.push(newSetting);
-        saveData();
-        renderRecurringList();
-        recurringForm.reset();
-        updateTotals(); // 更新 Dashboard 上的固定支出總額
-    });
-}
-
-// 12. 渲染設定列表
 function renderRecurringList() {
-    const listEl = document.getElementById('recurringList');
-    listEl.innerHTML = recurringSettings.map(setting => `
+    if (!recurringList) return;
+    recurringList.innerHTML = recurringSettings.map(setting => `
         <li class="expense-item">
             <div>
                 <strong>${setting.category}</strong>
-                <small style="display:block; color:#888;">每月 ${setting.day} 號 | $${setting.amount}</small>
+                <small style="display:block; color:#888;">每月 ${setting.day} 號 | $${setting.amount.toLocaleString()}</small>
             </div>
             <button class="delete-btn" onclick="deleteRecurring('${setting.id}')">✕</button>
         </li>
     `).join('');
 }
 
-// 13. 刪除固定支出設定
+// --- 9. 刪除功能 ---
+window.deleteExpense = function(id) {
+    if (confirm('確定要刪除這筆記錄嗎？')) {
+        expenses = expenses.filter(exp => exp.id != id);
+        saveData();
+        renderUI();
+    }
+};
+
 window.deleteRecurring = function(id) {
-    if (confirm('刪除後將不再自動扣款，確定嗎？')) {
+    if (confirm('確定要移除此固定支出嗎？')) {
         recurringSettings = recurringSettings.filter(s => s.id !== id);
         saveData();
         renderRecurringList();
@@ -212,6 +187,11 @@ window.deleteRecurring = function(id) {
     }
 };
 
+// --- 10. 資料持久化 ---
+function saveData() {
+    localStorage.setItem('myExpenses', JSON.stringify(expenses));
+    localStorage.setItem('recurringSettings', JSON.stringify(recurringSettings));
+}
 
-// 執行初始化
+// 啟動！
 init();
