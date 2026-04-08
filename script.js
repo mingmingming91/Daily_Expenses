@@ -7,6 +7,7 @@ let expenses = JSON.parse(localStorage.getItem('myExpenses')) || [];
 let recurringSettings = JSON.parse(localStorage.getItem('recurringSettings')) || [
     { id: 'rec_1', day: 1, amount: 5000, category: '預設房租', lastBilledMonth: '' }
 ];
+let displayLimit = 15;
 
 // --- 2. 獲取 DOM 元素 ---
 const expenseForm = document.getElementById('expenseForm');
@@ -174,33 +175,61 @@ function updateTotals() {
 function renderUI() {
     if (!expenseList) return;
     expenseList.innerHTML = '';
-    if (expenses.length === 0) {
+    
+    // 將所有記錄倒序排列（最新的在前面）
+    const sortedExpenses = [...expenses].reverse();
+    
+    if (sortedExpenses.length === 0) {
         expenseList.innerHTML = '<li class="empty-msg">今日未有使費，繼續保持！</li>';
-    } else {
-        const recentExpenses = [...expenses].reverse().slice(0, 15);
-        
-        recentExpenses.forEach(item => {
-            const li = document.createElement('li');
-            li.className = 'expense-item';
-            
-            // 處理備注顯示格式：如果沒備注就不顯示橫槓
-            const displayCategory = item.note ? `${item.category} - ${item.note}` : item.category;
-            
-            li.innerHTML = `
-                <div class="item-info">
-                    <div style="font-weight: bold;">${displayCategory}</div>
-                    <small style="color: #888;">${item.date} (${item.time})</small>
-                </div>
-                <div class="item-amount">
-                    <strong style="color: #e74c3c;">-$${item.amount.toLocaleString()}</strong>
-                    <button class="delete-btn" onclick="deleteExpense('${item.id}')">✕</button>
-                </div>
-            `;
-            expenseList.appendChild(li);
-        });
+        updateTotals();
+        return;
     }
+
+    // 根據目前的 displayLimit 截取要顯示的數量
+    const visibleExpenses = sortedExpenses.slice(0, displayLimit);
+
+    visibleExpenses.forEach(item => {
+        const li = document.createElement('li');
+        li.className = 'expense-item';
+        const displayCategory = item.note ? `${item.category} - ${item.note}` : item.category;
+        
+        li.innerHTML = `
+            <div class="item-info">
+                <div style="font-weight: bold;">${displayCategory}</div>
+                <small style="color: #888;">${item.date} (${item.time})</small>
+            </div>
+            <div class="item-amount">
+                <strong style="color: #e74c3c;">-$${item.amount.toLocaleString()}</strong>
+                <button class="delete-btn" onclick="deleteExpense('${item.id}')">✕</button>
+            </div>
+        `;
+        expenseList.appendChild(li);
+    });
+
+    // 如果還有更多沒顯示，加一個「載入更多」的提示感應區
+    if (displayLimit < sortedExpenses.length) {
+        const loadMoreMarker = document.createElement('li');
+        loadMoreMarker.id = "loadMoreMarker";
+        loadMoreMarker.style.cssText = "text-align:center; padding:15px; color:#888; list-style:none; font-size:0.9rem;";
+        loadMoreMarker.innerText = "正在載入更多...";
+        expenseList.appendChild(loadMoreMarker);
+    }
+
     updateTotals();
 }
+
+// 3. 監控滾動事件（無限滾動邏輯）
+window.addEventListener('scroll', () => {
+    // 當頁面滾動到接近底部時（剩餘 50px）
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 50) {
+        // 如果目前顯示的數量少於總數，就增加限制並重新渲染
+        if (displayLimit < expenses.length) {
+            displayLimit += 15; // 每次加 15 筆
+            renderUI();
+        }
+    }
+});
+
 
 function renderRecurringList() {
     if (!recurringList) return;
