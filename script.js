@@ -102,33 +102,34 @@ function updateTotals() {
 
 // --- 7. 介面渲染 ---
 function renderUI() {
-    // 清空清單
     expenseList.innerHTML = '';
 
     if (expenses.length === 0) {
         expenseList.innerHTML = '<li class="empty-msg">今日未有使費，繼續保持！</li>';
     } else {
-        // 顯示最近 10 筆記錄，最新的在上面
+        // 顯示最近 10 筆記錄
         const recentExpenses = [...expenses].reverse().slice(0, 10);
         
         recentExpenses.forEach(item => {
             const li = document.createElement('li');
             li.className = 'expense-item';
-            li.style.display = 'flex';
-            li.style.justifyContent = 'space-between';
-            li.style.padding = '10px 0';
-            li.style.borderBottom = '1px solid #eee';
             
+            // 注意這裡加入了 onclick 事件和刪除按鈕
             li.innerHTML = `
-                <div>
+                <div class="item-info">
                     <div style="font-weight: bold;">${item.category}</div>
                     <small style="color: #888;">${item.date}</small>
                 </div>
-                <strong style="color: #e74c3c;">-$${item.amount}</strong>
+                <div class="item-amount">
+                    <strong style="color: #e74c3c;">-$${item.amount.toLocaleString()}</strong>
+                    <button class="delete-btn" onclick="deleteExpense('${item.id}')">✕</button>
+                </div>
             `;
             expenseList.appendChild(li);
         });
     }
+    updateTotals();
+}
 
     updateTotals();
 }
