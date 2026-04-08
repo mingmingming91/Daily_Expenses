@@ -146,3 +146,19 @@ input, select {
     background-color: #ff5e5e;
     color: white;
 }
+
+#settingsView h3 {
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    color: var(--primary);
+}
+
+#recurringForm input {
+    margin-bottom: 5px;
+}
+
+hr {
+    border: 0;
+    border-top: 1px solid #ddd;
+    margin: 20px 0;
+}
