@@ -12,6 +12,7 @@ body {
     margin: 0;
     display: flex;
     justify-content: center;
+    min-height: 101vh; /* 確保至少有一點點滾動空間來觸發監聽器 */
 }
 
 .app-container {
@@ -103,6 +104,7 @@ input, select {
     list-style: none;
     padding: 20px;
     margin: 0;
+    padding-bottom: 50px; /* 底部留白，方便觸發滾動感應 */
 }
 
 .empty-msg {
