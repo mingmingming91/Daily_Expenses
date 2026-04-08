@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DailySpend - 記帳神器</title>
     <link rel="stylesheet" href="style.css">
-
 </head>
 <body>
 
@@ -37,16 +36,33 @@
         </section>
 
         <nav class="tab-menu">
-            <button class="tab-link active">最近記錄</button>
-            <button class="tab-link">固定使費</button>
+            <button class="tab-link active" onclick="switchTab('list')">最近記錄</button>
+            <button class="tab-link" onclick="switchTab('settings')">固定使費設定</button>
         </nav>
 
         <main class="content-area">
-            <ul class="expense-list" id="expenseList">
-                <li class="empty-msg">今日未有使費，繼續保持！</li>
-            </ul>
+            <div id="listView">
+                <ul class="expense-list" id="expenseList">
+                    <li class="empty-msg">今日未有使費，繼續保持！</li>
+                </ul>
+            </div>
+
+            <div id="settingsView" style="display: none; padding: 20px;">
+                <h3>每月自動扣款設定</h3>
+                <form id="recurringForm" style="margin-bottom: 20px;">
+                    <input type="text" id="recName" placeholder="項目 (如:房租)" required style="width: 100%; margin-bottom: 10px;">
+                    <div class="input-group">
+                        <input type="number" id="recDay" placeholder="日期 (1-31)" min="1" max="31" required>
+                        <input type="number" id="recAmount" placeholder="金額" required>
+                    </div>
+                    <button type="submit" class="add-btn" style="margin-top:10px; background: #2ecc71;">新增固定支出</button>
+                </form>
+                <hr>
+                <ul id="recurringList" style="list-style: none; padding: 0;"></ul>
+            </div>
         </main>
     </div>
-<script src="script.js"></script>
+
+    <script src="script.js"></script>
 </body>
 </html>
