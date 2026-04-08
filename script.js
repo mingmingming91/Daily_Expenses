@@ -271,19 +271,37 @@ function setDefaultSearchDates() {
 window.performSearch = function() {
     const from = document.getElementById('searchFrom').value;
     const to = document.getElementById('searchTo').value;
+    const cate = document.getElementById('searchCategory').value;
+    const noteKey = document.getElementById('searchNote').value.trim().toLowerCase();
+    
     const resultList = document.getElementById('searchResultList');
     const summaryEl = document.getElementById('searchResultSummary');
 
     if (!from || !to) return alert("請選擇日期範圍");
 
-    // 篩選介於日期之間的資料
-    const filtered = expenses.filter(exp => exp.date >= from && exp.date <= to)
-                             .sort((a, b) => new Date(b.date + ' ' + b.time) - new Date(a.date + ' ' + a.time));
+    // 多重篩選邏輯
+    const filtered = expenses.filter(exp => {
+        // 1. 日期檢查
+        const matchDate = exp.date >= from && exp.date <= to;
+        
+        // 2. 類別檢查 (如果選 "all" 就不過濾)
+        const matchCate = (cate === 'all') || (exp.category === cate);
+        
+        // 3. 備注關鍵字檢查 (不分大小寫，包含字串即可)
+        // 如果沒輸入關鍵字，預設為 true；如果有輸入，檢查備注是否包含該字串
+        const expNote = (exp.note || "").toLowerCase();
+        const matchNote = noteKey === "" || expNote.includes(noteKey);
+
+        return matchDate && matchCate && matchNote;
+    });
+
+    // 排序：最新的在上面
+    filtered.sort((a, b) => new Date(b.date + ' ' + b.time) - new Date(a.date + ' ' + a.time));
 
     const total = filtered.reduce((sum, exp) => sum + exp.amount, 0);
 
     // 顯示統計結果
-    summaryEl.innerText = `找到 ${filtered.length} 筆，總計：$${total.toLocaleString()}`;
+    summaryEl.innerText = `搜尋結果：${filtered.length} 筆，總計：$${total.toLocaleString()}`;
 
     // 渲染結果清單
     resultList.innerHTML = filtered.map(item => `
@@ -297,7 +315,7 @@ window.performSearch = function() {
                 <button class="delete-btn" onclick="deleteExpense('${item.id}'); performSearch();">✕</button>
             </div>
         </li>
-    `).join('') || '<li class="empty-msg">此段期間沒有記錄</li>';
+    `).join('') || '<li class="empty-msg">找不到符合條件的記錄</li>';
 };
 
 
