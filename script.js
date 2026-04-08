@@ -87,6 +87,9 @@ if (expenseForm) {
         renderUI();
 
         updateNoteSuggestions(); // 新增後立刻更新建議清單
+
+        // 呼叫重整功能
+        resetDisplay();
         
         // 提交後重置表單，並重新設定一次預設時間（防止下一筆記錄時間太舊）
         expenseForm.reset();
@@ -128,7 +131,11 @@ window.switchTab = function(tab) {
 
     // 處理 Tab 高亮
     tabs.forEach(t => t.classList.remove('active'));
-    if(tab === 'list') tabs[0].classList.add('active');
+    if (tab === 'list') {
+        tabs[0].classList.add('active');
+        // 切換回來時自動重置到前 15 筆
+        resetDisplay(); 
+    }
     if(tab === 'search') tabs[1].classList.add('active');
     if(tab === 'settings') tabs[2].classList.add('active');
 
@@ -233,6 +240,22 @@ window.addEventListener('scroll', () => {
     }
 });
 
+/**
+ * 重整顯示限額並更新畫面
+ * 用於：新增記錄後、刪除記錄後、切換回主頁面時
+ */
+function resetDisplay() {
+    // 1. 將限額重置為初始值
+    displayLimit = 15;
+    
+    // 2. 讓捲軸回到最上方 (選擇性)
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
+    // 3. 重新執行渲染
+    renderUI();
+    
+    console.log("介面已重整，目前限額：", displayLimit);
+}
 
 function renderRecurringList() {
     if (!recurringList) return;
@@ -252,7 +275,8 @@ window.deleteExpense = function(id) {
     if (confirm('確定要刪除這筆記錄嗎？')) {
         expenses = expenses.filter(exp => exp.id != id);
         saveData();
-        renderUI();
+        // 刪除後重整，確保剩餘資料正確顯示
+        resetDisplay();
     }
 };
 
