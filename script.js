@@ -147,7 +147,28 @@ function deleteExpense(id) {
     }
 }
 
-// 10. 處理固定支出表單提交
+// 10. 轉頁面的功能
+window.switchTab = function(tab) {
+    const listView = document.getElementById('listView');
+    const settingsView = document.getElementById('settingsView');
+    const tabs = document.querySelectorAll('.tab-link');
+
+    if (tab === 'list') {
+        listView.style.display = 'block';
+        settingsView.style.display = 'none';
+        tabs[0].classList.add('active');
+        tabs[1].classList.remove('active');
+        renderUI(); // 切換回來時更新列表
+    } else {
+        listView.style.display = 'none';
+        settingsView.style.display = 'block';
+        tabs[1].classList.add('active');
+        tabs[0].classList.remove('active');
+        renderRecurringList(); // 顯示設定列表
+    }
+};
+
+// 11. 處理固定支出表單提交
 const recurringForm = document.getElementById('recurringForm');
 if (recurringForm) {
     recurringForm.addEventListener('submit', (e) => {
@@ -167,7 +188,7 @@ if (recurringForm) {
     });
 }
 
-// 11. 渲染設定列表
+// 12. 渲染設定列表
 function renderRecurringList() {
     const listEl = document.getElementById('recurringList');
     listEl.innerHTML = recurringSettings.map(setting => `
@@ -181,7 +202,7 @@ function renderRecurringList() {
     `).join('');
 }
 
-// 12. 刪除固定支出設定
+// 13. 刪除固定支出設定
 window.deleteRecurring = function(id) {
     if (confirm('刪除後將不再自動扣款，確定嗎？')) {
         recurringSettings = recurringSettings.filter(s => s.id !== id);
