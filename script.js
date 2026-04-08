@@ -19,8 +19,19 @@ const recurringTotalEl = document.getElementById('recurringTotal');
 
 // --- 3. 啟動 App ---
 function init() {
+    setDefaultDateTime(); // 設定預設日期時間
     checkRecurringExpenses(); 
     renderUI();              
+}
+
+function setDefaultDateTime() {
+    const now = new Date();
+    // 設定日期預設值 (YYYY-MM-DD)
+    document.getElementById('inputDate').value = now.toLocaleDateString('sv-SE');
+    // 設定時間預設值 (HH:MM)
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    document.getElementById('inputTime').value = `${hours}:${minutes}`;
 }
 
 // --- 4. 自動處理固定使費邏輯 ---
