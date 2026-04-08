@@ -64,26 +64,28 @@ if (expenseForm) {
     expenseForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const amount = parseFloat(document.getElementById('amount').value);
-        const note = document.getElementById('note').value; // 抓取備注
-        const now = new Date();
+        const note = document.getElementById('note').value;
         
-        // 取得時間格式 14:30
-        const timeString = now.getHours().toString().padStart(2, '0') + ":" + 
-                           now.getMinutes().toString().padStart(2, '0');
+        // 2. 抓取使用者在輸入格選取的日期和時間
+        const selectedDate = document.getElementById('inputDate').value;
+        const selectedTime = document.getElementById('inputTime').value;
     
         const newExpense = {
             id: Date.now().toString(),
             amount: amount,
             category: document.getElementById('category').options[document.getElementById('category').selectedIndex].text,
-            note: note, // 儲存備注
-            date: now.toLocaleDateString('sv-SE'), // YYYY-MM-DD
-            time: timeString // 儲存時間
+            note: note,
+            date: selectedDate, // 使用選取的日期
+            time: selectedTime  // 使用選取的時間
         };
     
         expenses.push(newExpense);
         saveData();
         renderUI();
+        
+        // 提交後重置表單，並重新設定一次預設時間（防止下一筆記錄時間太舊）
         expenseForm.reset();
+        setDefaultDateTime();
     });
 }
 
