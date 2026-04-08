@@ -110,25 +110,40 @@ window.switchTab = function(tab) {
 };
 
 // --- 8. 介面渲染與統計 ---
+// 更新統計與日期的功能
 function updateTotals() {
     const now = new Date();
-    const thisMonth = now.toISOString().slice(0, 7);
     
+    // --- 1. 處理今日日期顯示 ---
+    const year = now.getFullYear().toString().slice(-2); // 取得 "26"
+    const month = now.getMonth() + 1;
+    const date = now.getDate();
+    const weekDays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+    const dayName = weekDays[now.getDay()];
+    
+    const dateString = `${year}年${month}月${date}日 (${dayName})`;
+    document.getElementById('todayDate').innerText = dateString;
+
+    // --- 2. 處理本月標籤 (4月1日至今) ---
+    document.getElementById('monthLabel').innerText = `本月支出 (${month}月1日至今)`;
+
+    // --- 3. 計算各項金額 ---
+    const thisMonthStr = now.toISOString().slice(0, 7); // "2026-04"
+    const todayStr = now.toLocaleDateString('sv-SE');  // "2026-04-08"
+
+    // 今日總支出
+    const todayTotal = expenses
+        .filter(exp => exp.date === todayStr)
+        .reduce((sum, exp) => sum + exp.amount, 0);
+
+    // 本月總支出
     const monthTotal = expenses
-        .filter(exp => exp.date.startsWith(thisMonth))
+        .filter(exp => exp.date.startsWith(thisMonthStr))
         .reduce((sum, exp) => sum + exp.amount, 0);
 
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(now.getDate() - 7);
-    const weekTotal = expenses
-        .filter(exp => new Date(exp.date) >= sevenDaysAgo)
-        .reduce((sum, exp) => sum + exp.amount, 0);
-
-    const recurringSum = recurringSettings.reduce((sum, rec) => sum + rec.amount, 0);
-
-    if (monthTotalEl) monthTotalEl.innerText = `$${monthTotal.toLocaleString()}`;
-    if (weekTotalEl) weekTotalEl.innerText = `$${weekTotal.toLocaleString()}`;
-    if (recurringTotalEl) recurringTotalEl.innerText = `$${recurringSum.toLocaleString()}`;
+    // --- 4. 渲染到介面 ---
+    document.getElementById('todayTotal').innerText = `$${todayTotal.toLocaleString()}`;
+    document.getElementById('monthTotal').innerText = `$${monthTotal.toLocaleString()}`;
 }
 
 function renderUI() {
