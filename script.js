@@ -159,13 +159,19 @@ function renderUI() {
     if (expenses.length === 0) {
         expenseList.innerHTML = '<li class="empty-msg">今日未有使費，繼續保持！</li>';
     } else {
-        [...expenses].reverse().slice(0, 15).forEach(item => {
+        const recentExpenses = [...expenses].reverse().slice(0, 15);
+        
+        recentExpenses.forEach(item => {
             const li = document.createElement('li');
             li.className = 'expense-item';
+            
+            // 處理備注顯示格式：如果沒備注就不顯示橫槓
+            const displayCategory = item.note ? `${item.category} - ${item.note}` : item.category;
+            
             li.innerHTML = `
                 <div class="item-info">
-                    <div style="font-weight: bold;">${item.category}</div>
-                    <small style="color: #888;">${item.date}</small>
+                    <div style="font-weight: bold;">${displayCategory}</div>
+                    <small style="color: #888;">${item.date} (${item.time})</small>
                 </div>
                 <div class="item-amount">
                     <strong style="color: #e74c3c;">-$${item.amount.toLocaleString()}</strong>
