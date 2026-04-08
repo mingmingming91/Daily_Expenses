@@ -21,7 +21,8 @@ const recurringTotalEl = document.getElementById('recurringTotal');
 function init() {
     setDefaultDateTime(); // 設定預設日期時間
     checkRecurringExpenses(); 
-    renderUI();              
+    renderUI();
+    updateNoteSuggestions(); // 初始化時加載備注歷史
 }
 
 function setDefaultDateTime() {
@@ -233,6 +234,23 @@ function saveData() {
     localStorage.setItem('myExpenses', JSON.stringify(expenses));
     localStorage.setItem('recurringSettings', JSON.stringify(recurringSettings));
 }
+
+// --- 11. 更新建議清單的函數 ---
+function updateNoteSuggestions() {
+    const datalist = document.getElementById('noteHistory');
+    
+    // 1. 從所有使費記錄中提取備注，過濾掉空的，並移除重複項
+    const previousNotes = [...new Set(expenses
+        .map(exp => exp.note)
+        .filter(note => note && note.trim() !== "")
+    )];
+
+    // 2. 將備注轉化為 <option> 標籤
+    datalist.innerHTML = previousNotes
+        .map(note => `<option value="${note}">`)
+        .join('');
+}
+
 
 // 啟動！
 init();
