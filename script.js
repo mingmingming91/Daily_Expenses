@@ -140,5 +140,18 @@ function saveData() {
     localStorage.setItem('recurringSettings', JSON.stringify(recurringSettings));
 }
 
+
+// --- 9. 刪除記錄功能 ---
+function deleteExpense(id) {
+    // 為了安全，刪除前問一句（如果不想要彈窗可以刪除 if 這行）
+    if (confirm('確定要刪除這筆記錄嗎？')) {
+        // 過濾掉該 ID 的項目 (注意：ID 可能是數字或字串，所以用 != 而不是 !==)
+        expenses = expenses.filter(exp => exp.id != id);
+        
+        saveData(); // 儲存到 LocalStorage
+        renderUI(); // 重新整理畫面
+    }
+}
+
 // 執行初始化
 init();
