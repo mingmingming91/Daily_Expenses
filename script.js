@@ -83,6 +83,8 @@ if (expenseForm) {
         expenses.push(newExpense);
         saveData();
         renderUI();
+
+        updateNoteSuggestions(); // 新增後立刻更新建議清單
         
         // 提交後重置表單，並重新設定一次預設時間（防止下一筆記錄時間太舊）
         expenseForm.reset();
