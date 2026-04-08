@@ -11,12 +11,15 @@
     <div class="app-container">
         <header class="dashboard">
             <div class="summary-card">
-                <p>本月支出</p>
-                <h1 id="monthTotal">$0.00</h1>
-                <div class="stats-row">
-                    <span>本週: <b id="weekTotal">$0</b></span>
-                    <span>固定支出: <b id="recurringTotal">$0</b></span>
-                </div>
+                <div id="todayDate" class="today-date">--年--月--日 (---)</div>
+                
+                <p style="margin-top: 10px; opacity: 0.9;">今日總支出</p>
+                <h2 id="todayTotal" style="margin: 0; font-size: 1.8rem;">$0</h2>
+                
+                <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.3); margin: 15px 0;">
+                
+                <p id="monthLabel">本月支出</p>
+                <h1 id="monthTotal" style="margin-top: 5px;">$0.00</h1>
             </div>
         </header>
 
