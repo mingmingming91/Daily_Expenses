@@ -107,14 +107,11 @@ function renderUI() {
     if (expenses.length === 0) {
         expenseList.innerHTML = '<li class="empty-msg">今日未有使費，繼續保持！</li>';
     } else {
-        // 顯示最近 10 筆記錄
         const recentExpenses = [...expenses].reverse().slice(0, 10);
         
         recentExpenses.forEach(item => {
             const li = document.createElement('li');
             li.className = 'expense-item';
-            
-            // 注意這裡加入了 onclick 事件和刪除按鈕
             li.innerHTML = `
                 <div class="item-info">
                     <div style="font-weight: bold;">${item.category}</div>
@@ -126,11 +123,10 @@ function renderUI() {
                 </div>
             `;
             expenseList.appendChild(li);
-        });
+        }); // 這裡要有 });
     }
     updateTotals();
-}
-
+} // 這裡要有一個 } 閉合 renderUI
 
 // --- 8. 儲存資料到 LocalStorage ---
 function saveData() {
