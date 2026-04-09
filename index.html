@@ -82,6 +82,16 @@
             
             <div id="searchResultSummary" class="summary-text"></div>
             <ul id="searchResultList" class="expense-list"></ul>
+            
+            <div id="deleteAllContainer" style="display: none; margin-top: 20px;">
+                <button onclick="deleteAllSearchResults()" class="add-btn" style="background: var(--accent); box-shadow: 0 4px 6px rgba(239, 68, 68, 0.2);">
+                    刪除以上所有記錄
+                </button>
+                <p style="text-align: center; color: #888; font-size: 0.8rem; margin-top: 8px;">
+                    注意：此操作無法復原
+                </p>
+            </div>
+            
         </div>
 
         <div id="settingsView" style="display: none; padding: 15px;">
