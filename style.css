@@ -1,57 +1,84 @@
 :root {
-    --primary: #4a90e2;
+    --primary: #2c3e50;
+    --accent: #e74c3c;
     --bg: #f5f7fa;
-    --text: #333;
-    --card-bg: #ffffff;
+}
+
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     background-color: var(--bg);
-    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     margin: 0;
-    display: flex;
-    justify-content: center;
-    min-height: 101vh; /* 確保至少有一點點滾動空間來觸發監聽器 */
+    padding: 0;
+    line-height: 1.6;
+    /* 確保有足夠高度觸發滾動偵測 */
+    min-height: 101vh; 
 }
 
-.app-container {
-    width: 100%;
-    max-width: 500px;
-    min-height: 100vh;
-    background: var(--bg);
-}
-
-/* 儀表板樣式 */
-.dashboard {
+/* 頂部固定區 */
+.header {
     background: var(--primary);
     color: white;
-    padding: 30px 20px;
-    border-bottom-left-radius: 25px;
-    border-bottom-right-radius: 25px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-
-.summary-card p { opacity: 0.8; margin-bottom: 5px; }
-.summary-card h1 { margin: 0; font-size: 2.5rem; }
-.stats-row { 
-    margin-top: 15px; 
-    display: flex; 
-    gap: 20px; 
-    font-size: 0.9rem;
-}
-
-/* 輸入框樣式 */
-.input-section {
     padding: 20px;
-    margin-top: -20px;
+    text-align: center;
+    position: sticky; /* 改用 sticky 比 fixed 更穩定 */
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
-#expenseForm {
-    background: var(--card-bg);
+.stats-container {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 10px;
+}
+
+/* 導覽列 */
+.tab-menu {
+    display: flex;
+    background: white;
+    position: sticky;
+    top: 105px; /* 緊跟在 header 下面，數值視 header 高度而定 */
+    z-index: 999;
+    border-bottom: 1px solid #ddd;
+}
+
+.tab-link {
+    flex: 1;
     padding: 15px;
-    border-radius: 15px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    border: none;
+    background: none;
+    font-size: 0.9rem;
+    color: #666;
+    cursor: pointer;
+}
+
+.tab-link.active {
+    color: var(--primary);
+    border-bottom: 3px solid var(--primary);
+    font-weight: bold;
+}
+
+/* 內容區域 - 核心修正點 */
+.content-area {
+    padding: 15px;
+    max-width: 600px;
+    margin: 0 auto;
+    /* 確保內容不會被置底的限額顯示遮住 */
+    padding-bottom: 80px; 
+}
+
+/* 表單與輸入組件 */
+.input-section {
+    background: white;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
 }
 
 .input-group {
@@ -61,7 +88,7 @@ body {
 }
 
 input, select {
-    flex: 1;
+    width: 100%;
     padding: 12px;
     border: 1px solid #ddd;
     border-radius: 8px;
@@ -71,121 +98,3 @@ input, select {
 .add-btn {
     width: 100%;
     padding: 12px;
-    background: var(--primary);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-/* 列表與分頁 */
-.tab-menu {
-    display: flex;
-    justify-content: space-around;
-    padding: 10px 0;
-}
-
-.tab-link {
-    background: none;
-    border: none;
-    color: #888;
-    padding: 5px 10px;
-    cursor: pointer;
-}
-
-.tab-link.active {
-    color: var(--primary);
-    border-bottom: 2px solid var(--primary);
-    font-weight: bold;
-}
-
-.expense-list {
-    list-style: none;
-    padding: 20px;
-    margin: 0;
-    padding-bottom: 50px; /* 底部留白，方便觸發滾動感應 */
-}
-
-.empty-msg {
-    text-align: center;
-    color: #aaa;
-    margin-top: 40px;
-}
-
-/* 調整列表項目排版 */
-.expense-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 0;
-    border-bottom: 1px solid #eee;
-}
-
-.item-amount {
-    display: flex;
-    align-items: center;
-    gap: 15px; /* 金額與按鈕之間的間距 */
-}
-
-/* 刪除按鈕樣式 */
-.delete-btn {
-    background-color: #ffeded;
-    color: #ff5e5e;
-    border: none;
-    border-radius: 50%;
-    width: 25px;
-    height: 25px;
-    cursor: pointer;
-    font-size: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: 0.2s;
-}
-
-.delete-btn:hover {
-    background-color: #ff5e5e;
-    color: white;
-}
-
-#settingsView h3 {
-    font-size: 1.1rem;
-    margin-bottom: 15px;
-    color: var(--primary);
-}
-
-#recurringForm input {
-    margin-bottom: 5px;
-}
-
-hr {
-    border: 0;
-    border-top: 1px solid #ddd;
-    margin: 20px 0;
-}
-
-.today-date {
-    font-size: 1.1rem;
-    font-weight: 500;
-    background: rgba(255, 255, 255, 0.2);
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 20px;
-}
-
-.item-info {
-    flex: 1; /* 佔用剩餘空間 */
-    padding-right: 10px;
-    overflow: hidden;
-}
-
-.item-info div {
-    white-space: nowrap;
-    text-overflow: ellipsis; /* 文字太長時顯示 ... */
-    overflow: hidden;
-}
-
-.summary-card h2 {
-    font-weight: bold;
-}
