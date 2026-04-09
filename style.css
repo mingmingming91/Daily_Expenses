@@ -13,10 +13,11 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     margin: 0;
     padding: 0;
-    /* 確保有足夠空間觸發滾動偵測 */
-    min-height: 101vh;
+    /* 1. 確保有微小滾動空間以觸發 JS 監聽 */
+    min-height: 101vh; 
 }
 
+/* 頂部資訊區 */
 .header {
     background: var(--primary);
     color: white;
@@ -30,21 +31,17 @@ body {
     margin-top: 10px;
 }
 
-.stat-item small {
-    display: block;
-    opacity: 0.8;
-}
-
 .amount {
     font-size: 1.5rem;
     font-weight: bold;
 }
 
-/* 分頁選單 */
+/* 導覽按鈕區 */
 .tab-menu {
     display: flex;
     background: white;
     border-bottom: 1px solid #ddd;
+    /* 2. 讓選單滾動到頂部時停住 */
     position: sticky;
     top: 0;
     z-index: 100;
@@ -65,11 +62,12 @@ body {
     font-weight: bold;
 }
 
-/* 內容區域 */
+/* 內容容器 */
 .content-area {
     padding: 15px;
 }
 
+/* 輸入表單卡片 */
 .input-section {
     background: white;
     padding: 15px;
@@ -100,18 +98,44 @@ input, select {
     border: none;
     border-radius: 8px;
     font-weight: bold;
+    cursor: pointer;
 }
 
-/* 列表樣式 */
+/* 列表項樣式 */
 .expense-list {
     list-style: none;
     padding: 0;
     margin: 0;
-    /* 底部留白防止遮擋 */
-    padding-bottom: 60px;
+    /* 3. 防止最後一筆被底部資訊遮擋 */
+    padding-bottom: 60px; 
 }
 
 .expense-item {
     background: white;
     padding: 15px;
-    border-radius:
+    border-radius: 10px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.item-info div {
+    margin-bottom: 4px;
+}
+
+.delete-btn {
+    background: none;
+    border: none;
+    color: #ccc;
+    font-size: 1.2rem;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.summary-text {
+    margin: 10px 0;
+    font-weight: bold;
+    color: var(--primary);
+}
