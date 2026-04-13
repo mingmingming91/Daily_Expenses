@@ -305,3 +305,58 @@ window.addEventListener('scroll', () => {
         }
     }
 });
+
+window.exportToCSV = function() {
+    // 1. 獲取目前的搜尋條件
+    const from = document.getElementById('searchFrom').value;
+    const to = document.getElementById('searchTo').value;
+    const cate = document.getElementById('searchCategory').value;
+    const noteKey = document.getElementById('searchNote').value.trim().toLowerCase();
+
+    // 2. 過濾出要導出的資料 (邏輯同 performSearch)
+    const filtered = expenses.filter(exp => {
+        const matchDate = exp.date >= from && exp.date <= to;
+        const matchCate = (cate === 'all') || (exp.category === cate);
+        const matchNote = noteKey === "" || (exp.note || "").toLowerCase().includes(noteKey);
+        return matchDate && matchCate && matchNote;
+    }).sort((a, b) => new Date(a.date + ' ' + a.time) - new Date(b.date + ' ' + b.time)); // 導出時按時間正序
+
+    if (filtered.length === 0) {
+        alert("目前的搜尋結果中沒有資料可以導出。");
+        return;
+    }
+
+    // 3. 建立 CSV 內容
+    // CSV 標題（加入 BOM 解決 Excel 中文亂碼問題）
+    let csvContent = "\uFEFF"; 
+    csvContent += "日期,時間,類別,備註,金額\n";
+
+    // 逐行加入資料
+    filtered.forEach(item => {
+        const row = [
+            item.date,
+            item.time,
+            item.category,
+            `"${item.note || ''}"`, // 備註若含逗號需用引號包裹
+            item.amount
+        ].join(",");
+        csvContent += row + "\n";
+    });
+
+    // 4. 建立 Blob 並觸發下載
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    
+    // 檔案名稱：記帳導出_開始日期_結束日期.csv
+    const fileName = `記帳導出_${from}_至_${to}.csv`;
+    
+    link.setAttribute("href", url);
+    link.setAttribute("download", fileName);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    alert(`成功導出 ${filtered.length} 筆記錄！`);
+};
